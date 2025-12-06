@@ -1,0 +1,457 @@
+═══════════════════════════════════════════════════════════════════════════════
+    🚀 GUIDE COMPLET D'EXÉCUTION - GESTION DE STOCK
+    Instructions Détaillées Étape par Étape
+═══════════════════════════════════════════════════════════════════════════════
+
+📅 Date : 4 Décembre 2025
+🖥️ Système : Windows
+📁 Emplacement : c:\Batata\IT\Java\Gestion Des Stocks\javafx
+
+═══════════════════════════════════════════════════════════════════════════════
+📋 PRÉREQUIS AVANT DE COMMENCER
+═══════════════════════════════════════════════════════════════════════════════
+
+Vérifiez que vous avez installé :
+
+1. ☐ Java JDK 17 ou supérieur
+   Vérification : Ouvrez PowerShell et tapez :
+   
+   java -version
+   
+   Vous devriez voir quelque chose comme :
+   "java version "17.0.x" ou supérieur"
+   
+   ❌ Si pas installé : Télécharger depuis https://www.oracle.com/java/technologies/downloads/
+
+2. ☐ MySQL 8.0 ou supérieur
+   Vérification : Dans PowerShell, tapez :
+   
+   mysql --version
+   
+   Vous devriez voir : "mysql Ver 8.0.x"
+   
+   ❌ Si pas installé : Télécharger depuis https://dev.mysql.com/downloads/mysql/
+
+3. ☐ Maven (inclus dans le projet via mvnw.cmd)
+   ✅ Déjà inclus dans le dossier javafx/
+
+═══════════════════════════════════════════════════════════════════════════════
+🗂️ ÉTAPE 1 : PRÉPARATION DE LA BASE DE DONNÉES
+═══════════════════════════════════════════════════════════════════════════════
+
+A. DÉMARRER LE SERVICE MYSQL
+────────────────────────────────────────────────────────
+
+Option 1 - Via Services Windows :
+   1. Appuyez sur Windows + R
+   2. Tapez : services.msc
+   3. Cherchez "MySQL80" ou "MySQL"
+   4. Clic droit → Démarrer
+   
+Option 2 - Via PowerShell (Admin) :
+   1. Clic droit sur PowerShell → Exécuter en tant qu'administrateur
+   2. Tapez :
+   
+   net start MySQL80
+   
+   ✅ Vous devriez voir : "Le service MySQL80 a démarré avec succès"
+
+B. CRÉER LA BASE DE DONNÉES
+────────────────────────────────────────────────────────
+
+1. Ouvrez PowerShell dans le dossier du projet
+2. Naviguez vers le dossier :
+   
+   cd "c:\Batata\IT\Java\Gestion Des Stocks\javafx"
+
+3. Exécutez la commande pour créer la base de données :
+   
+   mysql -u root -p < database.sql
+   
+   📝 Note : 
+   - Il vous demandera le mot de passe MySQL root
+   - Si vous n'avez pas de mot de passe, appuyez simplement sur Entrée
+   - Si vous avez un mot de passe, tapez-le (il ne s'affichera pas)
+
+4. ✅ Vérification : Vous devriez voir des messages de succès
+   
+   Pour vérifier que la base existe :
+   
+   mysql -u root -p -e "SHOW DATABASES;"
+   
+   Vous devriez voir "gestion_stock" dans la liste
+
+C. ALTERNATIVE - IMPORTER VIA MySQL WORKBENCH
+────────────────────────────────────────────────────────
+
+Si vous préférez une interface graphique :
+   1. Ouvrez MySQL Workbench
+   2. Connectez-vous à votre serveur MySQL local
+   3. Menu : Server → Data Import
+   4. Sélectionnez "Import from Self-Contained File"
+   5. Choisissez : c:\Batata\IT\Java\Gestion Des Stocks\javafx\database.sql
+   6. Cliquez sur "Start Import"
+
+═══════════════════════════════════════════════════════════════════════════════
+⚙️ ÉTAPE 2 : CONFIGURATION DE LA CONNEXION (SI NÉCESSAIRE)
+═══════════════════════════════════════════════════════════════════════════════
+
+Si votre configuration MySQL est différente, modifiez le fichier :
+src\dao\dbconnection.java
+
+Ouvrez le fichier et vérifiez ces lignes :
+
+    private static final String URL = "jdbc:mysql://localhost:3306/gestion_stock";
+    private static final String USER = "root";
+    private static final String PASSWORD = "";
+
+Modifiez si nécessaire :
+- USER : votre nom d'utilisateur MySQL (généralement "root")
+- PASSWORD : votre mot de passe MySQL (laissez "" si pas de mot de passe)
+- URL : changez "localhost" si MySQL est sur un autre serveur
+
+═══════════════════════════════════════════════════════════════════════════════
+🔨 ÉTAPE 3 : COMPILATION DU PROJET
+═══════════════════════════════════════════════════════════════════════════════
+
+A. OUVRIR POWERSHELL DANS LE BON DOSSIER
+────────────────────────────────────────────────────────
+
+Option 1 - Via l'Explorateur Windows :
+   1. Ouvrez l'explorateur de fichiers
+   2. Naviguez vers : c:\Batata\IT\Java\Gestion Des Stocks\javafx
+   3. Dans la barre d'adresse, tapez : powershell
+   4. Appuyez sur Entrée
+   
+Option 2 - Via PowerShell :
+   1. Ouvrez PowerShell
+   2. Tapez :
+   
+   cd "c:\Batata\IT\Java\Gestion Des Stocks\javafx"
+
+B. NETTOYER ET COMPILER
+────────────────────────────────────────────────────────
+
+Dans PowerShell, exécutez :
+
+.\mvnw.cmd clean compile
+
+📝 Ce qui va se passer :
+   - Maven va télécharger les dépendances (première fois seulement)
+   - Compilation de tous les fichiers Java
+   - Durée : 1-3 minutes (première fois), 30 secondes (fois suivantes)
+
+✅ Succès si vous voyez à la fin :
+   [INFO] BUILD SUCCESS
+   [INFO] ------------------------------------------------------------------------
+
+❌ Erreur ? Vérifiez :
+   - Java est bien installé (java -version)
+   - Vous êtes dans le bon dossier
+   - Connexion Internet active (pour télécharger les dépendances)
+
+C. CRÉER LE FICHIER JAR (OPTIONNEL)
+────────────────────────────────────────────────────────
+
+Pour créer un fichier exécutable :
+
+.\mvnw.cmd clean package
+
+✅ Le fichier JAR sera créé dans : target\javafx-1.0-SNAPSHOT.jar
+
+═══════════════════════════════════════════════════════════════════════════════
+▶️ ÉTAPE 4 : EXÉCUTION DE L'APPLICATION
+═══════════════════════════════════════════════════════════════════════════════
+
+Vous avez 3 MÉTHODES pour exécuter l'application :
+
+┌─────────────────────────────────────────────────────────────────────────────┐
+│ MÉTHODE 1 : VIA LE SCRIPT BATCH (LE PLUS SIMPLE) ⭐ RECOMMANDÉ             │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+1. Dans PowerShell (dans le dossier javafx) :
+
+   .\execute.bat
+
+2. ✅ L'application devrait se lancer automatiquement
+   ✅ Une fenêtre de connexion devrait apparaître
+
+┌─────────────────────────────────────────────────────────────────────────────┐
+│ MÉTHODE 2 : VIA MAVEN                                                       │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+1. Dans PowerShell (dans le dossier javafx) :
+
+   .\mvnw.cmd javafx:run
+
+2. ✅ L'application devrait se lancer
+   ✅ Fenêtre de connexion apparaît
+
+┌─────────────────────────────────────────────────────────────────────────────┐
+│ MÉTHODE 3 : DOUBLE-CLIC SUR LE SCRIPT                                      │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+1. Dans l'Explorateur Windows
+2. Naviguez vers : c:\Batata\IT\Java\Gestion Des Stocks\javafx
+3. Double-cliquez sur : execute.bat
+4. ✅ L'application démarre
+
+═══════════════════════════════════════════════════════════════════════════════
+🔐 ÉTAPE 5 : CONNEXION À L'APPLICATION
+═══════════════════════════════════════════════════════════════════════════════
+
+Lorsque la fenêtre de connexion apparaît :
+
+┌─────────────────────────────────────┐
+│    🔐 GESTION DE STOCK - LOGIN      │
+├─────────────────────────────────────┤
+│                                     │
+│  Nom d'utilisateur : admin          │
+│  Mot de passe      : admin          │
+│                                     │
+│      [Se connecter]  [Annuler]      │
+│                                     │
+└─────────────────────────────────────┘
+
+IDENTIFIANTS PAR DÉFAUT :
+   Nom d'utilisateur : admin
+   Mot de passe      : admin
+
+Tapez ces identifiants et cliquez sur "Se connecter"
+
+✅ Vous devriez être redirigé vers l'interface principale
+
+═══════════════════════════════════════════════════════════════════════════════
+🎯 ÉTAPE 6 : UTILISATION DE L'APPLICATION
+═══════════════════════════════════════════════════════════════════════════════
+
+Une fois connecté, vous verrez l'interface principale avec :
+
+┌─────────────────────────────────────────────────────────────────────────────┐
+│ 📦 GESTION DE STOCK                              Bienvenue, Administrateur  │
+├─────────────────────────────────────────────────────────────────────────────┤
+│  Total de produits: X    |    Valeur totale du stock: XXXX DZD             │
+├─────────────────────────────────────────────────────────────────────────────┤
+│ [🔍 Rechercher...] [Catégorie ▼] [➕Ajouter] [✏️Modifier] [🗑️Supprimer] [🔄] │
+├─────────────────────────────────────────────────────────────────────────────┤
+│ ID │ Nom          │ Description │ Prix  │ Quantité │ Catégorie │ Statut   │
+├────┼──────────────┼─────────────┼───────┼──────────┼───────────┼──────────┤
+│ 1  │ Ordinateur...│ Dell Insp...│ 85000 │ 15       │ Électro...│ Disponible│
+│ 2  │ Smartphone...│ Samsung...  │ 45000 │ 25       │ Électro...│ Disponible│
+└─────────────────────────────────────────────────────────────────────────────┘
+
+A. CONSULTER LES PRODUITS
+────────────────────────────────────────────────────────
+
+✅ Tous les produits sont affichés dans le tableau
+✅ Les produits avec quantité < 5 sont en ROUGE (Rupture de stock)
+✅ Les produits avec quantité >= 5 sont en VERT (Disponible)
+
+B. RECHERCHER UN PRODUIT
+────────────────────────────────────────────────────────
+
+1. Tapez le nom du produit dans la barre de recherche
+2. Cliquez sur "🔍 Rechercher"
+3. ✅ Les résultats s'affichent
+
+C. FILTRER PAR CATÉGORIE
+────────────────────────────────────────────────────────
+
+1. Cliquez sur le menu déroulant "Catégorie"
+2. Sélectionnez une catégorie
+3. ✅ Seuls les produits de cette catégorie s'affichent
+
+D. AJOUTER UN PRODUIT
+────────────────────────────────────────────────────────
+
+1. Cliquez sur "➕ Ajouter"
+2. Une fenêtre apparaît avec un formulaire
+3. Remplissez :
+   - Nom du produit
+   - Description
+   - Prix (nombre décimal)
+   - Quantité (nombre entier)
+   - Catégorie (sélection)
+4. Cliquez sur "Ajouter"
+5. ✅ Le produit est ajouté à la liste
+
+E. MODIFIER UN PRODUIT
+────────────────────────────────────────────────────────
+
+1. Cliquez sur un produit dans le tableau pour le sélectionner
+2. Cliquez sur "✏️ Modifier"
+3. Une fenêtre avec le formulaire pré-rempli apparaît
+4. Modifiez les informations
+5. Cliquez sur "Modifier"
+6. ✅ Le produit est mis à jour
+
+F. SUPPRIMER UN PRODUIT
+────────────────────────────────────────────────────────
+
+1. Cliquez sur un produit dans le tableau
+2. Cliquez sur "🗑️ Supprimer"
+3. Une confirmation apparaît
+4. Cliquez sur "OK" pour confirmer
+5. ✅ Le produit est supprimé
+
+G. ACTUALISER LA LISTE
+────────────────────────────────────────────────────────
+
+1. Cliquez sur "🔄 Actualiser"
+2. ✅ La liste complète est rechargée
+
+═══════════════════════════════════════════════════════════════════════════════
+❌ DÉPANNAGE - PROBLÈMES COURANTS
+═══════════════════════════════════════════════════════════════════════════════
+
+┌─────────────────────────────────────────────────────────────────────────────┐
+│ PROBLÈME 1 : "mysql n'est pas reconnu..."                                  │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+❌ Erreur : mysql n'est pas reconnu en tant que commande interne...
+
+✅ Solution :
+   1. Ajoutez MySQL au PATH Windows
+   2. OU utilisez le chemin complet :
+   
+   "C:\Program Files\MySQL\MySQL Server 8.0\bin\mysql.exe" -u root -p < database.sql
+
+┌─────────────────────────────────────────────────────────────────────────────┐
+│ PROBLÈME 2 : "Cannot connect to database"                                  │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+❌ L'application affiche une erreur de connexion à la base de données
+
+✅ Solutions :
+   1. Vérifiez que MySQL est démarré :
+      net start MySQL80
+   
+   2. Vérifiez que la base existe :
+      mysql -u root -p -e "SHOW DATABASES;"
+   
+   3. Vérifiez les identifiants dans src\dao\dbconnection.java
+   
+   4. Testez la connexion manuellement :
+      mysql -u root -p gestion_stock
+
+┌─────────────────────────────────────────────────────────────────────────────┐
+│ PROBLÈME 3 : "JavaFX runtime components are missing"                       │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+❌ Erreur au lancement de l'application
+
+✅ Solution :
+   N'utilisez PAS : java -jar target\javafx-1.0-SNAPSHOT.jar
+   
+   Utilisez À LA PLACE :
+   .\mvnw.cmd javafx:run
+   OU
+   .\execute.bat
+
+┌─────────────────────────────────────────────────────────────────────────────┐
+│ PROBLÈME 4 : "BUILD FAILURE" lors de la compilation                        │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+❌ Maven ne compile pas
+
+✅ Solutions :
+   1. Vérifiez Java :
+      java -version
+      (doit être 17 ou supérieur)
+   
+   2. Nettoyez le cache Maven :
+      .\mvnw.cmd clean
+   
+   3. Supprimez le dossier target et recompilez :
+      Remove-Item -Recurse -Force target
+      .\mvnw.cmd clean compile
+
+┌─────────────────────────────────────────────────────────────────────────────┐
+│ PROBLÈME 5 : L'interface ne s'affiche pas correctement                     │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+❌ Fenêtre vide ou erreurs FXML
+
+✅ Solution :
+   1. Vérifiez que les fichiers FXML sont présents :
+      - src\view\login.fxml
+      - src\view\products.fxml
+   
+   2. Recompilez :
+      .\mvnw.cmd clean compile
+
+═══════════════════════════════════════════════════════════════════════════════
+📝 COMMANDES UTILES - RÉSUMÉ RAPIDE
+═══════════════════════════════════════════════════════════════════════════════
+
+# Naviguer vers le projet
+cd "c:\Batata\IT\Java\Gestion Des Stocks\javafx"
+
+# Démarrer MySQL
+net start MySQL80
+
+# Créer la base de données
+mysql -u root -p < database.sql
+
+# Compiler le projet
+.\mvnw.cmd clean compile
+
+# Créer le JAR
+.\mvnw.cmd clean package
+
+# Exécuter l'application (Méthode 1)
+.\execute.bat
+
+# Exécuter l'application (Méthode 2)
+.\mvnw.cmd javafx:run
+
+# Vérifier Java
+java -version
+
+# Vérifier MySQL
+mysql --version
+
+# Lister les bases de données
+mysql -u root -p -e "SHOW DATABASES;"
+
+# Se connecter à la base
+mysql -u root -p gestion_stock
+
+═══════════════════════════════════════════════════════════════════════════════
+✅ CHECKLIST FINALE - AVANT D'EXÉCUTER
+═══════════════════════════════════════════════════════════════════════════════
+
+Cochez avant de lancer :
+
+☐ 1. Java JDK 17+ installé (java -version)
+☐ 2. MySQL 8.0+ installé (mysql --version)
+☐ 3. Service MySQL démarré (net start MySQL80)
+☐ 4. Base de données créée (mysql -u root -p < database.sql)
+☐ 5. Projet compilé (.\mvnw.cmd clean compile)
+☐ 6. Dans le bon dossier (cd "...\javafx")
+
+Si tous les points sont cochés ✅, exécutez :
+
+    .\execute.bat
+
+═══════════════════════════════════════════════════════════════════════════════
+🎉 VOUS ÊTES PRÊT !
+═══════════════════════════════════════════════════════════════════════════════
+
+L'application devrait maintenant fonctionner correctement !
+
+Identifiants de connexion :
+   - Username : admin
+   - Password : admin
+
+Bon test ! 🚀
+
+═══════════════════════════════════════════════════════════════════════════════
+
+Si vous avez des problèmes, consultez la section DÉPANNAGE ci-dessus.
+
+Institut Supérieur d'Informatique - 2CS
+Mini-Projet POO - Gestion de Stock
+Décembre 2025
+
+═══════════════════════════════════════════════════════════════════════════════
