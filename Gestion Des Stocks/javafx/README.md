@@ -347,7 +347,7 @@ productdao
 
 ## 👥 Auteurs
 
-**Projet développé par** : [Votre Nom/Binôme]  
+**Projet développé par** : Ayoub Joudi / Ghofrane Chamekh
 **Filière** : 2CS  
 **Institut** : Institut Supérieur d'Informatique  
 **Année** : 2025
